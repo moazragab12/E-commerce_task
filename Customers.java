@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class Customers {
@@ -51,75 +52,55 @@ public class Customers {
 
 
     public void checkout(List<Products> warehouse) {
-        if (cart == null || cart.getIncartProducts().isEmpty()) {
-            System.out.println("Error: Cart is empty.");
+        if (cart.isEmpty()) {
+            System.out.println("Cart is empty!");
             return;
         }
 
-        double subtotal = 0.0;
-        boolean needsShipping = false;
-
-        for (Products productInCart : cart.getIncartProducts()) {
-            Products productInInventory = findProductInInventory(productInCart.getName(), warehouse);
-            if (productInInventory == null) {
-                System.out.println("Error: Product " + productInCart.getName() + " not found in inventory.");
-                return;
-            }
-
-            if (productInCart.getRemainingDaysToexpire() != 0 &&
-                    productInCart.getRemainingDaysToexpire() <= 0) {
-                System.out.println("Error: Product " + productInCart.getName() + " is expired.");
-                return;
-            }
-
-            if (productInInventory.getQuantity() < productInCart.getQuantity()) {
-                System.out.println("Error: Not enough stock for " + productInCart.getName());
-                return;
-            }
-
-            subtotal += productInCart.getPrice() * productInCart.getQuantity();
-
-            if (productInCart.getShippabale()) {
-                needsShipping = true;
-            }
-        }
-
-        double shipping = needsShipping ? 20.0 : 0.0;
-        double total = subtotal + shipping;
+        double subtotal = cart.calculateTotalPrice();
+        double shippingFee = 100;
+        double total = subtotal + shippingFee;
 
         if (balance < total) {
-            System.out.println("Error: Insufficient balance. You have $" + balance + " but need $" + total);
+            System.out.println("Insufficient balance!");
             return;
+        }
+
+        List<Shippable> toShip = new ArrayList<>();
+
+        for (Products p : cart.getIncartProducts()) {
+
+            Products warehouseProduct = findProductInInventory(warehouse, p.getName());
+            if (warehouseProduct != null) {
+                warehouseProduct.decreaseQuantity(p.getQuantity());
+            }
+
+            System.out.println(
+                    "name " + p.getName() +
+                            " quantity " + p.getQuantity() +
+                            " price " + (p.getPrice() * p.getQuantity())
+            );
+
+            if (p instanceof Shippable) {
+                toShip.add((Shippable) p);
+            }
         }
 
         balance -= total;
-
-        for (Products productInCart : cart.getIncartProducts()) {
-            Products productInInventory = findProductInInventory(productInCart.getName(), warehouse);
-            productInInventory.decreaseQuantity(productInCart.getQuantity());
-        }
-
-        System.out.println("----- CHECKOUT SUCCESSFUL -----");
-        System.out.println("Customer: " + name);
-        System.out.println("Order Details:");
-
-        for (Products p : cart.getIncartProducts()) {
-            System.out.printf( "name "+
-                    p.getName() +" quantity "+
-                    p.getQuantity()+" price "+
-                    p.getPrice() * p.getQuantity()+" ");
-            if (p.getShippabale()) {
-                System.out.println(" weight "+ p.getWeight());
-            }
-        }
-
-        System.out.printf("Subtotal: $%.2f\n", subtotal);
-        System.out.printf("Shipping fees: $%.2f\n", shipping);
-        System.out.printf("Total paid amount: $%.2f\n", total);
-        System.out.printf("Remaining balance: $%.2f\n", balance);
         cart.clearCart();
+
+        System.out.println("Subtotal: " + subtotal);
+        System.out.println("Shipping fee: " + shippingFee);
+        System.out.println("Total paid: " + total);
+        System.out.println("Remaining balance: " + balance);
+
+        if (!toShip.isEmpty()) {
+            ShippingService.sendToShipping(toShip);
+        }
     }
-    public Products findProductInInventory(String name, List<Products> warehouse) {
+
+
+    public Products findProductInInventory(List<Products> warehouse, String name) {
         for (Products p : warehouse) {
             if (p.getName().equals(name)) {
                 return p;
@@ -127,6 +108,7 @@ public class Customers {
         }
         return null;
     }
+
 
 
     public Cart getCart() {

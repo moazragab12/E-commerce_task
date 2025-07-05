@@ -1,4 +1,4 @@
-public class TV extends Products {
+public class TV extends Products implements Shippable {
     public static double weight;
 
     TV() {
@@ -6,9 +6,12 @@ public class TV extends Products {
         setName("TV");
         setPrice(8000);
         addItem();
-        setWeight(10000);
+        this.weight = 10000;
     }
-
+    @Override
+    public double getWeight() {
+        return weight;
+    }
     public void addItem() {
         setQuantity(getQuantity() + 1);
     }
