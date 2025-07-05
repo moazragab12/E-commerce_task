@@ -1,5 +1,5 @@
-public class Cheese extends Products {
-    public static double weight; //in grams
+public class Cheese extends Products  implements Shippable{
+    private double weight;
 
 
     Cheese() {
@@ -8,7 +8,11 @@ public class Cheese extends Products {
         setPrice(20);
         addItem();
         setRemainingDaysToexpire(15);
-        setWeight(250);
+this.weight = 200;
+    }
+    @Override
+    public double getWeight() {
+        return weight;
     }
 
 

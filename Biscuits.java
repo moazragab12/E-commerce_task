@@ -1,5 +1,5 @@
-public class Biscuits  extends Products{
-    public static double weight;
+public class Biscuits  extends Products implements Shippable  {
+    private double weight;
 
     Biscuits() {
       setShippabale(true);
@@ -7,8 +7,12 @@ public class Biscuits  extends Products{
         setPrice(10);
         addItem();
         setRemainingDaysToexpire(30);
-        setWeight(500);
+      this.weight = 100;
 
+    }
+    @Override
+    public double getWeight() {
+        return weight;
     }
 
 

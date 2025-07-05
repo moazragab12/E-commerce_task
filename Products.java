@@ -1,16 +1,17 @@
-public class Products {
-    private  double weight;
-   private String name;
-    private int price,quantity;
-    private  Boolean isShippabale;
-    private  int remainingDaysToexpire;
+public    class Products  {
+    private String name;
+    private double price;
+    private int quantity;
+    private boolean isShippabale;
+    private int remainingDaysToexpire;
+
 
     public Products() {
         this.name = "";
         this.price = 0;
         this.quantity = 0;
         this.isShippabale = false;
-        this.weight = 0.0;
+
         this.remainingDaysToexpire = -1 ; //-1 indicates no expiry
     }
     public Products(String name, int price, int quantity, Boolean isShippabale, double weight, int remainingDaysToexpire) {
@@ -18,15 +19,10 @@ public class Products {
         this.price = price;
         this.quantity = quantity;
         this.isShippabale = isShippabale;
-        this.weight = weight;
+
         this.remainingDaysToexpire = remainingDaysToexpire;
     }
-    public double getWeight() {
-        return weight;
-    }
-    public void setWeight(double weight) {
-        this.weight = weight;
-    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -51,7 +47,7 @@ public class Products {
         return name;
     }
 
-    public int getPrice() {
+    public double getPrice() {
         return price;
     }
 
